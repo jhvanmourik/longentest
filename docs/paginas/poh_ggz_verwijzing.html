@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POH-GGZ Verwijzingstabel</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f7f5f0;
+    color: #1a1a18;
+    padding: 40px 24px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: normal;
+    letter-spacing: 0.04em;
+    color: #3a3a38;
+    margin-bottom: 28px;
+    font-family: Georgia, serif;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  thead tr {
+    background: #f0ede6;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: normal;
+    font-family: Georgia, serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7a7870;
+    border-bottom: 1px solid #e0ddd5;
+  }
+  td {
+    padding: 16px 16px;
+    vertical-align: top;
+    border-bottom: 1px solid #f0ede6;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #2a2a28;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  tr:hover td {
+    background: #faf8f4;
+  }
+  .name {
+    font-size: 22px;
+    font-weight: normal;
+    font-family: Georgia, serif;
+    color: #1a1a18;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .tag {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 2px 2px 2px 0;
+    font-family: Georgia, serif;
+    font-style: italic;
+  }
+  .tag-g {
+    background: #eaf3de;
+    color: #3b6d11;
+    border: 1px solid #c0dd97;
+  }
+  .tag-r {
+    background: #fcebeb;
+    color: #a32d2d;
+    border: 1px solid #f09595;
+  }
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aaa89e;
+    margin-bottom: 4px;
+    margin-top: 10px;
+    font-family: Georgia, serif;
+  }
+  .section-label:first-child {
+    margin-top: 0;
+  }
+  .col-name { width: 60px; }
+  .col-sterk { width: 220px; }
+  .col-niet  { width: 200px; }
+  .col-aanpak { }
+
+  @media (max-width: 680px) {
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { display: none; }
+    td { padding: 10px 14px; }
+    td.col-name { padding-top: 18px; }
+    tr { border-bottom: 2px solid #e0ddd5; margin-bottom: 8px; }
+    tr:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>POH-GGZ — Verwijzingsoverzicht</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th class="col-name">POH</th>
+      <th class="col-sterk">Sterk in</th>
+      <th class="col-niet">Liever niet</th>
+      <th class="col-aanpak">Aanpak &amp; achtergrond</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-name"><div class="name">H</div></td>
+      <td>
+        <span class="tag tag-g">Chronische pijn / ALK</span>
+        <span class="tag tag-g">Slaap (CGT-i)</span>
+        <span class="tag tag-g">Revalidatie</span>
+        <span class="tag tag-g">Brede doelgroep</span>
+      </td>
+      <td>
+        <span class="tag tag-r">ADHD / ASS</span>
+        <span class="tag tag-r">Externaliseerders (lang)</span>
+      </td>
+      <td>
+        <div class="section-label">Stijl</div>
+        Informeel, normaliserend, patiënt-gestuurd. Werkt met ACT en pijngevolgenmodel. Holistische tekening van vastloopoorzaak.
+        <div class="section-label">Achtergrond</div>
+        Fysiotherapeut + MSc psychologie. Ervaring in ZBC revalidatie en huisartsenpraktijk.
+      </td>
+    </tr>
+    <tr>
+      <td class="col-name"><div class="name">I</div></td>
+      <td>
+        <span class="tag tag-g">Systeem / relaties</span>
+        <span class="tag tag-g">Burn-out / stress</span>
+        <span class="tag tag-g">ADHD / ASS</span>
+        <span class="tag tag-g">Negatief zelfbeeld</span>
+        <span class="tag tag-g">Jeugdzorgachtergrond</span>
+      </td>
+      <td>
+        <span class="tag tag-r">Veilig Thuis-gezinnen</span>
+        <span class="tag tag-r">Passieve klagers</span>
+      </td>
+      <td>
+        <div class="section-label">Stijl</div>
+        Aansluitend, niet-sturend, maar confronterend waar nodig. Kijkt achter de hulpvraag naar trauma en blokkades. In opleiding tot burn-outcoach (CSR).
+        <div class="section-label">Achtergrond</div>
+        PABO → MWD → jeugdzorg (gezinsvoogd, pleegzorg) → integratief therapeut → POH-GGZ sinds 2019.
+      </td>
+    </tr>
+    <tr>
+      <td class="col-name"><div class="name">L</div></td>
+      <td>
+        <span class="tag tag-g">Trauma (enkelvoudig)</span>
+        <span class="tag tag-g">ADHD (structuur)</span>
+        <span class="tag tag-g">Zwangerschap / ouderschap</span>
+        <span class="tag tag-g">Overspanning</span>
+      </td>
+      <td>
+        <span class="tag tag-r">ASS / LVB</span>
+        <span class="tag tag-r">Persoonlijkheidsproblematiek</span>
+        <span class="tag tag-r">Systeemproblematiek</span>
+      </td>
+      <td>
+        <div class="section-label">Stijl</div>
+        Pragmatisch, rustig, structuurgericht. Bijna altijd huiswerk (schrijfopdrachten, Therapieland, podcasts). Doet ook wandelconsulten.
+        <div class="section-label">Achtergrond</div>
+        Psychologie VU. Diagnostiek bij ARQ traumacentrum, Genderpoli VUMC en jeugdzorg. CGT, EMDR, ACT en Compassion Focused Therapy.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
