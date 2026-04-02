@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVRM — Naslagwerk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent:      #7b2d2d;
+  --accent-dark: #5c2121;
+  --accent-light:#f5e6e6;
+
+  --blue:        #1a56a0;
+  --blue-light:  #e8f0fb;
+  --green:       #1a7a4a;
+  --green-light: #e6f4ed;
+  --orange:      #b85500;
+  --orange-light:#fff0e0;
+  --g50:  #f8f9fa;
+  --g100: #f0f2f5;
+  --g200: #e2e8f0;
+  --g300: #cbd5e1;
+  --g400: #94a3b8;
+  --g600: #475569;
+  --g800: #1e293b;
+  --sidebar: 230px;
+  --header:  58px;
+  --radius: 8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.18);
+  --ease: 0.15s ease;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--g100);
+  color: var(--g800);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  height: var(--header);
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  z-index: 200;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,.85);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.12);
+  transition: background var(--ease), color var(--ease);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,255,255,.22); color: #fff; }
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -.2px;
+}
+
+.divider { color: rgba(255,255,255,.35); font-size: 18px; font-weight: 300; }
+
+.search-wrap { flex: 1; max-width: 460px; position: relative; }
+
+#search {
+  width: 100%;
+  padding: 7px 12px 7px 34px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255,255,255,.16);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: background var(--ease);
+}
+#search::placeholder { color: rgba(255,255,255,.55); }
+#search:focus        { background: rgba(255,255,255,.26); }
+
+.search-icon {
+  position: absolute; left: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,.65); pointer-events: none;
+}
+
+#result-count { margin-left: auto; color: rgba(255,255,255,.65); font-size: 12.5px; white-space: nowrap; }
+
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+aside {
+  width: var(--sidebar);
+  background: #fff;
+  border-right: 1px solid var(--g200);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 14px 0 20px;
+}
+
+.filter-section { padding: 0 10px 14px; border-bottom: 1px solid var(--g200); margin-bottom: 10px; }
+.filter-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+.filter-title {
+  font-size: 10px; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--g400); padding: 0 6px; margin-bottom: 5px;
+}
+
+.filter-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 5px 8px; border: none; background: transparent;
+  border-radius: 6px; cursor: pointer; font-family: inherit;
+  font-size: 13px; color: var(--g600); text-align: left;
+  transition: background var(--ease), color var(--ease);
+  margin-bottom: 1px; gap: 6px;
+}
+.filter-btn .label { flex: 1; }
+.filter-btn:hover { background: var(--g100); }
+.filter-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+.filter-badge {
+  background: var(--g200); color: var(--g600); border-radius: 10px;
+  padding: 1px 6px; font-size: 11px; min-width: 20px; text-align: center; flex-shrink: 0;
+}
+.filter-btn.active .filter-badge { background: var(--accent); color: #fff; }
+
+main { flex: 1; overflow-y: auto; padding: 18px; }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+  gap: 13px; align-content: start;
+}
+
+.card {
+  background: #fff; border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  padding: 15px 16px; cursor: pointer; border: 1.5px solid transparent;
+  display: flex; flex-direction: column; gap: 9px;
+  transition: box-shadow var(--ease), transform var(--ease), border-color var(--ease);
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--accent); }
+
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.card-title { font-size: 13.5px; font-weight: 600; color: var(--g800); line-height: 1.35; flex: 1; }
+
+.type-badge {
+  flex-shrink: 0; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 12px; line-height: 1.4;
+}
+.type-notitie      { background: var(--green-light); color: var(--green); }
+.type-stroomschema { background: var(--blue-light);  color: var(--blue); }
+.type-richtlijn    { background: var(--orange-light); color: var(--orange); }
+
+.card-desc { font-size: 12px; color: var(--g600); line-height: 1.45; flex: 1; }
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--g100); color: var(--g600); border: 1px solid var(--g200); }
+
+.card-cta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--accent); font-weight: 500; opacity: 0; transition: opacity var(--ease); }
+.card:hover .card-cta { opacity: 1; }
+
+.format-pill {
+  font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 8px; margin-left: auto; flex-shrink: 0;
+}
+.format-pdf  { background: #fee2e2; color: #991b1b; }
+.format-html { background: #fef9c3; color: #854d0e; }
+
+.empty { grid-column: 1/-1; text-align: center; padding: 70px 20px; color: var(--g400); font-size: 14px; }
+.empty svg { margin-bottom: 12px; opacity: .4; }
+
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,23,42,.55); z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 18px; backdrop-filter: blur(3px);
+  animation: fadeIn .15s ease;
+}
+.modal-overlay.open { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: #fff; border-radius: 12px; width: 100%; max-width: 920px;
+  height: 92vh; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); overflow: hidden; animation: slideUp .18s ease;
+}
+@keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-bar {
+  display: flex; align-items: center; padding: 11px 14px;
+  border-bottom: 1px solid var(--g200); gap: 10px; flex-shrink: 0; background: var(--g50);
+}
+#modal-type-badge { flex-shrink: 0; }
+.modal-title { flex: 1; font-size: 14.5px; font-weight: 600; color: var(--g800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.modal-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 13px; border-radius: 6px; font-family: inherit;
+  font-size: 12.5px; font-weight: 500; cursor: pointer; border: none;
+  transition: background var(--ease); text-decoration: none; white-space: nowrap;
+}
+.btn-newtab { background: var(--accent); color: #fff; }
+.btn-newtab:hover { background: var(--accent-dark); }
+.btn-close { background: var(--g200); color: var(--g600); font-size: 16px; padding: 5px 11px; }
+.btn-close:hover { background: var(--g300); color: var(--g800); }
+
+#modal-frame { flex: 1; border: none; width: 100%; background: var(--g100); }
+
+mark { background: #fef08a; border-radius: 2px; padding: 0 1px; color: inherit; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--g300); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--g400); }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-btn" href="/">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Naslagwerk
+  </a>
+  <span class="divider">|</span>
+  <div class="logo">🫀 CVRM</div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="search" id="search" placeholder="Zoek document, thema of trefwoord…" autocomplete="off" spellcheck="false">
+  </div>
+  <span id="result-count"></span>
+</header>
+
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <main><div class="cards-grid" id="grid"></div></main>
+</div>
+
+<div class="modal-overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-bar">
+      <span class="type-badge" id="modal-badge"></span>
+      <span class="modal-title" id="modal-title"></span>
+      <div class="modal-tags" id="modal-tags"></div>
+      <a class="btn btn-newtab" id="btn-newtab" href="#" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        Nieuw tabblad
+      </a>
+      <button class="btn btn-close" id="btn-close">✕</button>
+    </div>
+    <iframe id="modal-frame" title="Document weergave"></iframe>
+  </div>
+</div>
+
+<script>
+const notes = [
+
+  // ── HYPERTENSIE ──────────────────────────────────────────
+  { file: '../docs/cvrm/Hypertensie.pdf',
+    title: 'Hypertensie',
+    thema: ['hypertensie'], type: 'richtlijn',
+    desc: 'NHG-richtlijn hypertensie.' },
+
+  { file: '../docs/cvrm/Calciumantagonist en oedeem.html',
+    title: 'Calciumantagonist en oedeem',
+    thema: ['hypertensie'], type: 'notitie',
+    desc: 'Calciumantagonist geeft bij 25% oedeem (dosisafhankelijk) — omzetten in ACE-remmer of steunkousen.' },
+
+  { file: '../docs/cvrm/Nierfunctie en ace remmers.html',
+    title: 'Nierfunctie en ACE-remmers',
+    thema: ['hypertensie'], type: 'notitie',
+    desc: 'Acceptabele eGFR-daling (≤20%) na start RAS-remmers en aanbevolen monitoringsinterval.' },
+
+  { file: '../docs/cvrm/Orthostatische hypotensie.html',
+    title: 'Orthostatische hypotensie',
+    thema: ['hypertensie'], type: 'notitie',
+    desc: 'Definitie: >20 mmHg systolisch of >10 mmHg diastolisch daling na 3 minuten staan.' },
+
+  { file: '../docs/cvrm/thuismeting en intervalmeting.html',
+    title: 'Thuismeting en intervalmeting',
+    thema: ['hypertensie'], type: 'notitie',
+    desc: 'Correctiefactoren (+5 of +10 mmHg) voor schatting spreekkamerbloeddruk vanuit thuis- of intervalmetingen.' },
+
+  { file: '../docs/cvrm/2010_Book_HypertensieEn24-uursBloeddrukm.pdf',
+    title: '24-uurs bloeddruk (richtlijn)',
+    thema: ['hypertensie'], type: 'richtlijn',
+    desc: 'Uitgebreide richtlijn over hypertensie en 24-uurs bloeddrukmonitoring.' },
+
+  // ── LIPIDEN & STATINES ───────────────────────────────────
+  { file: '../docs/cvrm/statine.html',
+    title: 'Statines — overzicht',
+    thema: ['lipiden'], type: 'notitie',
+    desc: 'Tijdstip inname, werkingsmechanisme en statinekeuze op basis van halfwaardetijd (simvastatine voor de nacht).' },
+
+  { file: '../docs/cvrm/Statines en nocebo effect.html',
+    title: 'Statines en nocebo-effect',
+    thema: ['lipiden'], type: 'notitie',
+    desc: 'Crossover studie (n=60): nocebo-effect verklaart een groot deel van statinenklachten.' },
+
+  { file: '../docs/cvrm/HDL invloeden.html',
+    title: 'HDL-invloeden',
+    thema: ['lipiden'], type: 'notitie',
+    desc: 'Factoren die HDL verlagen (roken, androgenen) en relatie met cardiovasculair risico.' },
+
+  { file: '../docs/cvrm/Hypertriglyceridemie.html',
+    title: 'Hypertriglyceridemie',
+    thema: ['lipiden'], type: 'notitie',
+    desc: 'Behandeling: koolhydraatarm dieet, afvallen en alcoholbeperking gedurende enkele maanden.' },
+
+  { file: '../docs/cvrm/Xanthelasmata.html',
+    title: 'Xanthelasmata',
+    thema: ['lipiden'], type: 'notitie',
+    desc: 'Oorzaken: FH, obesitas, DM, levercirrose, postmenopauze, soms hypo- of hyperthyreoïdie.' },
+
+  { file: '../docs/cvrm/familiaire hypercholesterolemie FH score.html',
+    title: 'Familiaire hypercholesterolemie (FH-score)',
+    thema: ['lipiden'], type: 'notitie',
+    desc: 'FH-score en PCSK9-indicaties; 25% van Nederlanders 35–70 jaar heeft verhoogd cholesterol.' },
+
+  { file: '../docs/cvrm/Scannable document op 24 okt. 2018 15_40_32.pdf',
+    title: 'PCSK9-remmers (ingescand)',
+    thema: ['lipiden'], type: 'richtlijn',
+    desc: 'Ingescande samenvatting over PCSK9-remmers en vergoedingsindicaties.' },
+
+  { file: '../docs/cvrm/Scannable document op 12 jan. 2019 21_43_34.pdf',
+    title: 'Statine ouderen 70+',
+    thema: ['lipiden'], type: 'richtlijn',
+    desc: 'Samenvatting over statinegebruik bij ouderen boven de 70 jaar.' },
+
+  // ── DIABETES ─────────────────────────────────────────────
+  { file: '../docs/cvrm/Glucose diagnose diabetes.html',
+    title: 'Glucose: diagnose diabetes',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Diagnostische criteria: nuchtere glucose >7,0 mmol/l (tweemaal) of >11,0 met klachten.' },
+
+  { file: '../docs/cvrm/Diabetes instellen.html',
+    title: 'Diabetes instellen',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Streefwaarden voor nuchterglucose (4,5–8 mmol/l) bij diabetesinstelling.' },
+
+  { file: '../docs/cvrm/diabetes medicatieweetjes.html',
+    title: 'Diabetes medicatieweetjes',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Maximale metforminedosering, eGFR-grenzen en praktische tips voor diabetesmedicatie.' },
+
+  { file: '../docs/cvrm/Glp1 en dpp4 bmi.html',
+    title: 'GLP-1 en DPP-4 indicaties',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Formulier- en vergoedingscriteria voor GLP-1 agonisten op basis van BMI (zn.nl).' },
+
+  { file: '../docs/cvrm/insuline starten met 4xdaags schema.html',
+    title: 'Insuline starten (4× daags)',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Startdosering: 0,2–0,4 EH/kg/dag, helft als langwerkend insuline.' },
+
+  { file: '../docs/cvrm/onderscheiden DM1 en DM2 in lab.html',
+    title: 'Onderscheid DM1 en DM2 in lab',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'GAD-antilichamen (anti-GAD65) en isletcelantistoffen voor differentiatie DM1 versus DM2.' },
+
+  { file: '../docs/cvrm/Simms classificatie.html',
+    title: 'Simms classificatie (voet)',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Monofilamenttest op hallux, MTP1 en MTP5 voor diabetische voetclassificatie.' },
+
+  { file: '../docs/cvrm/diabetes voetzorg.html',
+    title: 'Diabetes voetzorg',
+    thema: ['diabetes'], type: 'notitie',
+    desc: 'Protocol voor monofilamenttest (10g, 3× per locatie) en Simms-classificatie.' },
+
+  { file: '../docs/cvrm/Metabool syndroom.html',
+    title: 'Metabool syndroom',
+    thema: ['diabetes', 'leefstijl'], type: 'notitie',
+    desc: 'Criteria: tailleomvang, bloeddruk, glucose en lipiden — diagnose bij ≥3 van 5 criteria.' },
+
+  { file: '../docs/cvrm/Diabetes jaarcontrole.pdf',
+    title: 'Diabetes jaarcontrole',
+    thema: ['diabetes'], type: 'richtlijn',
+    desc: 'Protocol voor de jaarlijkse diabetescontrole in de huisartsenpraktijk.' },
+
+  { file: '../docs/cvrm/Diabetes medicatie afbouwen.pdf',
+    title: 'Diabetes medicatie afbouwen',
+    thema: ['diabetes'], type: 'richtlijn',
+    desc: 'Stappenplan voor het afbouwen van diabetesmedicatie.' },
+
+  { file: '../docs/cvrm/Mody Lada DM.pdf',
+    title: 'MODY / LADA diabetes',
+    thema: ['diabetes'], type: 'richtlijn',
+    desc: 'Overzicht van MODY en LADA als atypische vormen van diabetes mellitus.' },
+
+  // ── HARTFALEN ────────────────────────────────────────────
+  { file: '../docs/cvrm/hartfalen.html',
+    title: 'Hartfalen (samenvatting)',
+    thema: ['hartfalen'], type: 'notitie',
+    desc: 'Systolisch hartfalen bij EF <45%; uitleg van backward failure-mechanismen.' },
+
+  { file: '../docs/cvrm/Hartfalen (1).html',
+    title: 'Hartfalen — uitgebreid (1)',
+    thema: ['hartfalen'], type: 'notitie',
+    desc: 'Uitgebreide notitie over hartfalen met BNP-verhogingsoorzaken en behandelstappen.' },
+
+  { file: '../docs/cvrm/Hartfalen (2).html',
+    title: 'Hartfalen — uitgebreid (2)',
+    thema: ['hartfalen'], type: 'notitie',
+    desc: 'Aanvullende notitie over hartfalen, BNP-criteria en behandelopties.' },
+
+  // ── RITMESTOORNISSEN ─────────────────────────────────────
+  { file: '../docs/cvrm/ECG criteria.html',
+    title: 'ECG-criteria',
+    thema: ['ritmestoornissen'], type: 'notitie',
+    desc: 'Uitgebreide ECG-interpretatie: driehoek van Eindhoven, afleidingen en diagnostische criteria.' },
+
+  { file: '../docs/cvrm/pvc extrasystole.html',
+    title: 'PVC en extrasystolen',
+    thema: ['ritmestoornissen'], type: 'notitie',
+    desc: 'Uitgebreid overzicht van premature ventriculaire contracties: oorzaken, presentatie en beleid.' },
+
+  { file: '../docs/cvrm/Vasovagale collaps.html',
+    title: 'Vasovagale collaps',
+    thema: ['ritmestoornissen'], type: 'notitie',
+    desc: 'Drie P\'s: Posture, Provoking factors, Prodrome — differentiaal van collaps.' },
+
+  { file: '../docs/cvrm/dd collaps.html',
+    title: 'DD collaps',
+    thema: ['ritmestoornissen'], type: 'notitie',
+    desc: 'Gelegenheidsepilepsie als differentiaal bij collaps door provocerende factoren.' },
+
+  { file: '../docs/cvrm/ICD en pacemaker in laatste levensfase.html',
+    title: 'ICD/pacemaker in palliatieve fase',
+    thema: ['ritmestoornissen'], type: 'notitie',
+    desc: 'Ethische afwegingen en kansen bij ICD-gebruik in de laatste levensfase.' },
+
+  { file: '../docs/cvrm/Leefstijladviezen ook cruciaal bij boezemfibrilleren.html',
+    title: 'Leefstijl bij boezemfibrilleren',
+    thema: ['ritmestoornissen', 'leefstijl'], type: 'notitie',
+    desc: 'Gewichtsreductie, bewegen en alcoholreductie zijn cruciaal bij behandeling van atriumfibrilleren.' },
+
+  { file: '../docs/cvrm/Boezemfibrilleren bij ouderen.pdf',
+    title: 'Boezemfibrilleren bij ouderen',
+    thema: ['ritmestoornissen'], type: 'richtlijn',
+    desc: 'Richtlijn voor beleid bij boezemfibrilleren bij oudere patiënten.' },
+
+  // ── ISCHEMIE ─────────────────────────────────────────────
+  { file: '../docs/cvrm/Angina pectoris.html',
+    title: 'Angina pectoris',
+    thema: ['ischemie'], type: 'notitie',
+    desc: 'Onderhoudsbehandeling bij >2× per week klachten; nitraat-sildenafil interactie (48u).' },
+
+  { file: '../docs/cvrm/Angina pectoris typisch.html',
+    title: 'Angina pectoris typisch',
+    thema: ['ischemie'], type: 'notitie',
+    desc: 'Kenmerken typische angina pectoris en contraindicatie voor combinatie met sildenafil.' },
+
+  { file: '../docs/cvrm/Angina pectoris vrouw.html',
+    title: 'Angina pectoris bij vrouwen',
+    thema: ['ischemie'], type: 'notitie',
+    desc: 'Risicofactoren specifiek voor vrouwen: zwangerschapsdiabetes, zwangerschapshypertensie, pre-eclampsie.' },
+
+  { file: '../docs/cvrm/Angina pectoris voorlichting.html',
+    title: 'Angina pectoris voorlichting',
+    thema: ['ischemie'], type: 'notitie',
+    desc: 'Visueel voorlichtingsmateriaal voor patiënten met angina pectoris.' },
+
+  { file: '../docs/cvrm/Aortadissectie.html',
+    title: 'Aortadissectie',
+    thema: ['ischemie'], type: 'notitie',
+    desc: 'Klinische kenmerken: scheurende pijn, hypotensie, unilaterale pulsaties, neurologische uitval.' },
+
+  { file: '../docs/cvrm/Tia risico cva.html',
+    title: 'TIA — risico op CVA',
+    thema: ['ischemie'], type: 'notitie',
+    desc: 'Na TIA: ~20% kans op CVA binnen 10 jaar, waarvan 1/5 in de eerste week.' },
+
+  // ── ANTISTOLLING ─────────────────────────────────────────
+  { file: '../docs/cvrm/antistolling stoppen bij ingreep.html',
+    title: 'Antistolling stoppen bij ingreep',
+    thema: ['anticoagulantia'], type: 'richtlijn',
+    desc: 'Stoptijden per anticoagulans op basis van nierfunctie (eGFR) voor elektieve ingrepen.' },
+
+  { file: '../docs/cvrm/Aspirine zonder indicatie.html',
+    title: 'Aspirine zonder indicatie',
+    thema: ['anticoagulantia'], type: 'notitie',
+    desc: 'Geen indicatie voor trombocytenaggregatieremmers bij patiënten zonder bestaande HVZ.' },
+
+  // ── LEEFSTIJL & CVRM ────────────────────────────────────
+  { file: '../docs/cvrm/CVRM PIN.html',
+    title: 'CVRM behandelgrenzen',
+    thema: ['leefstijl'], type: 'notitie',
+    desc: 'Behandelgrenzen en weging van premature HVZ in de familie bij cardiovasculair risicomanagement.' },
+
+  { file: '../docs/cvrm/Voeding pin.html',
+    title: 'Voeding en CVRM',
+    thema: ['leefstijl'], type: 'notitie',
+    desc: 'Leefstijladvies: zoutbeperking (zoutmeter.nl), koken en insulineresistentie via levervet.' },
+
+  { file: '../docs/cvrm/Diëtist Heemskerk.html',
+    title: 'Diëtist Heemskerk',
+    thema: ['leefstijl'], type: 'notitie',
+    desc: 'Contactgegevens diëtist Laura Sprengers, Heemskerk.' },
+
+  // ── OVERIG ───────────────────────────────────────────────
+  { file: '../docs/cvrm/Hypertrofische cardiomyopathie.html',
+    title: 'Hypertrofische cardiomyopathie',
+    thema: ['overig'], type: 'notitie',
+    desc: 'Alarmsymptomen: plotselinge hartdood in familie, onverklaarde syncope, kortademigheid bij inspanning.' },
+
+  { file: '../docs/cvrm/Endocarditis verschijnselen foto\'s.html',
+    title: "Endocarditis verschijnselen (foto's)",
+    thema: ['overig'], type: 'notitie',
+    desc: 'Klinische verschijnselen bij endocarditis: Janeway-laesies, noduli van Osler, splinterbloedingen.' },
+
+  { file: '../docs/cvrm/endocarditisprofylax.html',
+    title: 'Endocarditisprofylaxe',
+    thema: ['overig'], type: 'notitie',
+    desc: 'Indicaties: kunstkleppen en donorkleppen; wél bij tandheelkundige extractie en wortelkanaalbeh.' },
+
+  { file: '../docs/cvrm/Pericarditis.html',
+    title: 'Pericarditis',
+    thema: ['overig'], type: 'notitie',
+    desc: 'Klinische kenmerken: scherpe pleuritische retrosternale pijn, verergering in rugligging.' },
+
+  { file: '../docs/cvrm/NSAID bij cardiovasculaire aandoeningen en risico.html',
+    title: 'NSAID en cardiovasculair risico',
+    thema: ['overig'], type: 'notitie',
+    desc: 'Diclofenac geeft ~1,2× hoger CV-risico; beleid bij NSAID-gebruik bij hartfalen en HVZ.' },
+
+  { file: '../docs/cvrm/Nierinsufficiëntiedialyse.html',
+    title: 'Nierinsufficiëntie en dialyse',
+    thema: ['overig'], type: 'notitie',
+    desc: 'Uremische klachten (malaise, jeuk, gewichtsverlies) en indicaties voor dialyse.' },
+];
+
+const themaLabel = {
+  hypertensie:      'Hypertensie',
+  lipiden:          'Lipiden & Statines',
+  diabetes:         'Diabetes',
+  hartfalen:        'Hartfalen',
+  ritmestoornissen: 'Ritmestoornissen',
+  ischemie:         'Ischemie & ACS',
+  anticoagulantia:  'Antistolling',
+  leefstijl:        'Leefstijl & CVRM',
+  overig:           'Overig',
+};
+
+// ══════════════════════════════════════════════════════════
+// NIETS HIERONDER AANPASSEN
+// ══════════════════════════════════════════════════════════
+const typeLabel = { notitie: 'Notitie', stroomschema: 'Stroomschema', richtlijn: 'Richtlijn' };
+
+function getFormat(file) {
+  return file.toLowerCase().endsWith('.html') ? 'html' : 'pdf';
+}
+
+let activeType = 'alle', activeThema = 'alle', query = '';
+
+function filtered() {
+  return notes.filter(n => {
+    if (activeType  !== 'alle' && n.type !== activeType)          return false;
+    if (activeThema !== 'alle' && !n.thema.includes(activeThema)) return false;
+    if (query) {
+      const q = query.toLowerCase();
+      if (![n.title, n.desc, ...n.thema, n.type].join(' ').toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function countType(t)  { return t === 'alle' ? notes.length : notes.filter(n => n.type === t).length; }
+function countThema(t) { return t === 'alle' ? notes.length : notes.filter(n => n.thema.includes(t)).length; }
+
+function hl(text) {
+  if (!query) return text;
+  return text.replace(new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>');
+}
+
+function buildSidebar() {
+  const types  = ['alle', 'notitie', 'stroomschema', 'richtlijn'];
+  const themas = ['alle', ...Object.keys(themaLabel)];
+  let h = `<div class="filter-section"><div class="filter-title">Type</div>`;
+  types.forEach(t => {
+    h += `<button class="filter-btn ${activeType===t?'active':''}" data-type="${t}">
+      <span class="label">${t==='alle'?'Alle types':typeLabel[t]}</span>
+      <span class="filter-badge">${countType(t)}</span></button>`;
+  });
+  h += `</div><div class="filter-section"><div class="filter-title">Thema</div>`;
+  themas.forEach(t => {
+    const cnt = countThema(t);
+    if (!cnt) return;
+    h += `<button class="filter-btn ${activeThema===t?'active':''}" data-thema="${t}">
+      <span class="label">${t==='alle'?'Alle thema\'s':themaLabel[t]}</span>
+      <span class="filter-badge">${cnt}</span></button>`;
+  });
+  h += `</div>`;
+  const aside = document.getElementById('sidebar');
+  aside.innerHTML = h;
+  aside.querySelectorAll('[data-type]').forEach(el =>
+    el.addEventListener('click', () => { activeType = el.dataset.type; refresh(); }));
+  aside.querySelectorAll('[data-thema]').forEach(el =>
+    el.addEventListener('click', () => { activeThema = el.dataset.thema; refresh(); }));
+}
+
+function renderCards() {
+  const list = filtered();
+  document.getElementById('result-count').textContent =
+    list.length === notes.length ? `${notes.length} documenten` : `${list.length} / ${notes.length}`;
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty">
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <div>Geen documenten gevonden.</div></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(n => {
+    const fmt = getFormat(n.file);
+    return `
+    <div class="card" data-file="${n.file}" tabindex="0" role="button">
+      <div class="card-top">
+        <span class="card-title">${hl(n.title)}</span>
+        <span class="type-badge type-${n.type}">${typeLabel[n.type]}</span>
+      </div>
+      <p class="card-desc">${hl(n.desc)}</p>
+      <div class="card-tags">
+        ${n.thema.map(t=>`<span class="tag">${themaLabel[t]||t}</span>`).join('')}
+        <span class="format-pill format-${fmt}">${fmt.toUpperCase()}</span>
+      </div>
+      <div class="card-cta">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Bekijken
+      </div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.card').forEach(c => {
+    const open = () => openModal(c.dataset.file);
+    c.addEventListener('click', open);
+    c.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') open(); });
+  });
+}
+
+function refresh() { buildSidebar(); renderCards(); }
+
+function openModal(file) {
+  const n = notes.find(x => x.file === file);
+  if (!n) return;
+  document.getElementById('modal-title').textContent = n.title;
+  const badge = document.getElementById('modal-badge');
+  badge.textContent = typeLabel[n.type]; badge.className = `type-badge type-${n.type}`;
+  document.getElementById('modal-tags').innerHTML = n.thema.map(t=>`<span class="tag">${themaLabel[t]||t}</span>`).join('');
+  document.getElementById('modal-frame').src = file;
+  document.getElementById('btn-newtab').href = file;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  setTimeout(() => { document.getElementById('modal-frame').src = ''; }, 200);
+  document.body.style.overflow = '';
+}
+
+document.getElementById('btn-close').addEventListener('click', closeModal);
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.getElementById('search').addEventListener('input', e => { query = e.target.value.trim(); renderCards(); });
+
+refresh();
+</script>
+</body>
+</html>
