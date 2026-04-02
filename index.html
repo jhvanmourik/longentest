@@ -680,7 +680,8 @@ function renderTiles() {
     const container = document.getElementById('tiles-container');
     container.innerHTML = Object.entries(categories).map(([key, cat]) => {
         const count = Object.values(cat.tabs).reduce((sum, tab) => sum + tab.items.length, 0);
-        return '<div class="tile" style="--tile-color:' + cat.color + '" onclick="showCategory(\'' + key + '\')">' +
+        var action = cat.url ? 'window.location.href=\'' + cat.url + '\'' : 'showCategory(\'' + key + '\')';
+return '<div class="tile" style="--tile-color:' + cat.color + '" onclick="' + action + '">' +
             '<style>.tile[style*="' + cat.color + '"]::before { background: ' + cat.color + '; }</style>' +
             '<span class="tile-icon">' + cat.icon + '</span>' +
             '<span class="tile-title">' + cat.title + '</span>' +
