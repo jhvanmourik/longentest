@@ -38,5 +38,11 @@
         ]
       }
     }
+  },
+  "urologie": {
+    "title": "Urologie",
+    "icon": "🍺",
+    "color": "#EAB308",
+    "url": "/urologie/"
   }
 }
